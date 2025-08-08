@@ -1,10 +1,10 @@
-import React from 'react';
-import { Handle, Position } from 'reactflow';
-import { Settings, Trash2 } from 'lucide-react';
-import type { ContractNode } from '../types';
+import React from "react";
+import { Handle, Position } from "reactflow";
+import { Settings, Trash2 } from "lucide-react";
+import type { ContractNode } from "../types";
 
 interface NodeProps {
-  data: ContractNode['data'] & {
+  data: ContractNode["data"] & {
     onEdit: () => void;
     onDelete: () => void;
   };
@@ -13,18 +13,20 @@ interface NodeProps {
 
 export const ContractCallNode: React.FC<NodeProps> = ({ data, selected }) => {
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-4 min-w-[250px] border-2 ${
-      selected ? 'border-blue-500' : 'border-gray-200'
-    }`}>
+    <div
+      className={`bg-white rounded-lg shadow-lg p-4 min-w-[250px] border-2 ${
+        selected ? "border-blue-500" : "border-gray-200"
+      }`}
+    >
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         className="w-3 h-3 bg-blue-500 border-2 border-white"
       />
-      
+
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-gray-800 truncate flex-1">
-          {data.functionName || 'New Contract Call'}
+          {data.functionName || "New Contract Call"}
         </h3>
         <div className="flex gap-1">
           <button
@@ -41,31 +43,31 @@ export const ContractCallNode: React.FC<NodeProps> = ({ data, selected }) => {
           </button>
         </div>
       </div>
-      
+
       <div className="space-y-1 text-sm">
         <div className="text-gray-600">
           <span className="font-medium">Contract:</span>
           <div className="text-xs text-gray-500 truncate">
-            {data.contractAddress || 'Not set'}
+            {data.contractAddress || "Not set"}
           </div>
         </div>
-        
+
         {data.args && data.args.length > 0 && (
           <div className="text-gray-600">
             <span className="font-medium">Args:</span> {data.args.length}
           </div>
         )}
-        
+
         {data.value && (
           <div className="text-gray-600">
             <span className="font-medium">Value:</span> {data.value} ETH
           </div>
         )}
       </div>
-      
+
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         className="w-3 h-3 bg-blue-500 border-2 border-white"
       />
     </div>
