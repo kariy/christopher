@@ -84,10 +84,10 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
   if (!node) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden border p-[15px]">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">Edit Contract Call</h2>
+          <h2 className="text-xl font-semibold">Edit Call</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded transition-colors"

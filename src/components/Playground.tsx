@@ -5,7 +5,6 @@ import ReactFlow, {
   applyEdgeChanges,
   Background,
   Controls,
-  MiniMap,
   type Node,
   type Edge,
   type NodeChange,
@@ -319,7 +318,6 @@ export const Playground: React.FC = () => {
         >
           <Background />
           <Controls />
-          <MiniMap />
         </ReactFlow>
       </div>
 
