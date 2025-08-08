@@ -10,6 +10,7 @@ import ReactFlow, {
   type NodeChange,
   type EdgeChange,
   type Connection as FlowConnection,
+  BackgroundVariant,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Plus, Save, Upload } from "lucide-react";
@@ -314,7 +315,7 @@ export const Playground: React.FC = () => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
-          fitView
+          // fitView
         >
           <Background />
           <Controls />
