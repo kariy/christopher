@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
-import ReactFlow, {
+import {
+  ReactFlow,
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
@@ -11,8 +12,10 @@ import ReactFlow, {
   type NodeChange,
   type EdgeChange,
   type Connection as FlowConnection,
-} from "reactflow";
-import "reactflow/dist/style.css";
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import "@xyflow/react/dist/base.css";
+
 import { Plus, Play, Save, Upload, Wallet } from "lucide-react";
 import { ContractCallNode } from "./Node";
 import { NodeEditor } from "./NodeEditor";
@@ -35,8 +38,10 @@ export const Playground: React.FC = () => {
   const [isExecuting, setIsExecuting] = useState(false);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) =>
-      setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes: NodeChange[]) => {
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
+
     []
   );
 
@@ -73,6 +78,9 @@ export const Playground: React.FC = () => {
       position: newNode.position,
       data: newNode.data,
     };
+
+    console.log(contractNode);
+
     setEditingNode(contractNode);
   };
 
