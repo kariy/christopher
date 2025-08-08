@@ -256,7 +256,7 @@ export const Playground: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 relative">
       <div className="bg-white border-b border-gray-200 p-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">Christopher</h1>
