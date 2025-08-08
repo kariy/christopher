@@ -13,26 +13,25 @@ import ReactFlow, {
   type Connection as FlowConnection,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { Plus, Play, Save, Upload, Wallet } from "lucide-react";
+import { Plus, Save, Upload } from "lucide-react";
 import { ContractCallNode } from "./Node";
 import { NodeEditor } from "./NodeEditor";
 import type { ContractNode } from "../types";
-import { connectWallet, buildTransaction } from "../lib/ethereum";
-import { ethers } from "ethers";
+// import { connectWallet, buildTransaction } from "../lib/ethereum";
+import { useAccount } from "wagmi";
+import { Account, SignIn } from "../lib/account";
 
 const nodeTypes = {
   contractCall: ContractCallNode,
 };
 
 export const Playground: React.FC = () => {
+  const { isConnected } = useAccount();
+
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [editingNode, setEditingNode] = useState<ContractNode | null>(null);
-  const [wallet, setWallet] = useState<{
-    address: string;
-    signer: ethers.Signer;
-  } | null>(null);
-  const [isExecuting, setIsExecuting] = useState(false);
+  // const [isExecuting, setIsExecuting] = useState(false);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -47,22 +46,34 @@ export const Playground: React.FC = () => {
   );
 
   const onConnect = useCallback(
-    (params: FlowConnection) => setEdges((eds) => addEdge(params, eds)),
+    (params: FlowConnection) =>
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...params,
+            type: "smoothstep",
+            animated: true,
+            style: { strokeWidth: 3, stroke: "#3b82f6" },
+          },
+          eds
+        )
+      ),
     []
   );
 
   const addNode = () => {
+    const nodeId = `node-${Date.now()}`;
     const newNode: Node = {
-      id: `node-${Date.now()}`,
+      id: nodeId,
       type: "contractCall",
-      position: { x: 250, y: 100 + nodes.length * 150 },
+      position: { x: 100 + nodes.length * 300, y: 200 },
       data: {
         contractAddress: "",
         functionName: "",
         functionSignature: "",
         args: [],
-        onEdit: () => handleEditNode(`node-${Date.now()}`),
-        onDelete: () => handleDeleteNode(`node-${Date.now()}`),
+        onEdit: () => handleEditNode(nodeId),
+        onDelete: () => handleDeleteNode(nodeId),
       },
     };
 
@@ -114,81 +125,72 @@ export const Playground: React.FC = () => {
     setEditingNode(null);
   };
 
-  const handleConnectWallet = async () => {
-    try {
-      const { signer } = await connectWallet();
-      const address = await signer.getAddress();
-      setWallet({ address, signer });
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-      alert(
-        "Failed to connect wallet. Please make sure MetaMask is installed."
-      );
-    }
-  };
+  // const handleConnectWallet = async () => {
+  //   try {
+  //   } catch (error) {
+  //     console.error("Failed to connect wallet:", error);
+  //     alert(
+  //       "Failed to connect wallet. Please make sure MetaMask is installed."
+  //     );
+  //   }
+  // };
 
-  const executeTransaction = async () => {
-    if (!wallet) {
-      alert("Please connect your wallet first");
-      return;
-    }
+  // const executeTransaction = async () => {
+  //   // if (!wallet) {
+  //   //   alert("Please connect your wallet first");
+  //   //   return;
+  //   // }
+  //   // if (nodes.length === 0) {
+  //   //   alert("Please add at least one contract call");
+  //   //   return;
+  //   // }
+  //   // setIsExecuting(true);
+  //   // try {
+  //   //   const orderedNodes = getOrderedNodes();
+  //   //   const contractNodes: ContractNode[] = orderedNodes.map((node) => ({
+  //   //     id: node.id,
+  //   //     position: node.position,
+  //   //     data: node.data,
+  //   //   }));
+  //   //   const provider = wallet.signer.provider;
+  //   //   if (!provider) {
+  //   //     throw new Error("No provider available");
+  //   //   }
+  //   //   const transactions = await buildTransaction(contractNodes, provider);
+  //   //   for (const tx of transactions) {
+  //   //     const txResponse = await wallet.signer.sendTransaction(tx);
+  //   //     await txResponse.wait();
+  //   //     console.log("Transaction sent:", txResponse.hash);
+  //   //   }
+  //   //   alert("All transactions executed successfully!");
+  //   // } catch (error) {
+  //   //   console.error("Transaction failed:", error);
+  //   //   alert("Transaction failed. Check console for details.");
+  //   // } finally {
+  //   //   setIsExecuting(false);
+  //   // }
+  // };
 
-    if (nodes.length === 0) {
-      alert("Please add at least one contract call");
-      return;
-    }
+  // const getOrderedNodes = () => {
+  //   const visited = new Set<string>();
+  //   const result: Node[] = [];
 
-    setIsExecuting(true);
-    try {
-      const orderedNodes = getOrderedNodes();
-      const contractNodes: ContractNode[] = orderedNodes.map((node) => ({
-        id: node.id,
-        position: node.position,
-        data: node.data,
-      }));
+  //   const visit = (nodeId: string) => {
+  //     if (visited.has(nodeId)) return;
+  //     visited.add(nodeId);
 
-      const provider = wallet.signer.provider;
-      if (!provider) {
-        throw new Error("No provider available");
-      }
+  //     const incomingEdges = edges.filter((e) => e.target === nodeId);
+  //     for (const edge of incomingEdges) {
+  //       visit(edge.source);
+  //     }
 
-      const transactions = await buildTransaction(contractNodes, provider);
+  //     const node = nodes.find((n) => n.id === nodeId);
+  //     if (node) result.push(node);
+  //   };
 
-      for (const tx of transactions) {
-        const txResponse = await wallet.signer.sendTransaction(tx);
-        await txResponse.wait();
-        console.log("Transaction sent:", txResponse.hash);
-      }
-
-      alert("All transactions executed successfully!");
-    } catch (error) {
-      console.error("Transaction failed:", error);
-      alert("Transaction failed. Check console for details.");
-    } finally {
-      setIsExecuting(false);
-    }
-  };
-
-  const getOrderedNodes = () => {
-    const visited = new Set<string>();
-    const result: Node[] = [];
-
-    const visit = (nodeId: string) => {
-      if (visited.has(nodeId)) return;
-      visited.add(nodeId);
-
-      const incomingEdges = edges.filter((e) => e.target === nodeId);
-      for (const edge of incomingEdges) {
-        visit(edge.source);
-      }
-
-      const node = nodes.find((n) => n.id === nodeId);
-      if (node) result.push(node);
-    };
-
-    nodes.forEach((node) => visit(node.id));
-    return result;
-  };
+  //   nodes.forEach((node) => visit(node.id));
+  //   return result;
+  // };
 
   const savePlayground = () => {
     const data = {
@@ -227,7 +229,7 @@ export const Playground: React.FC = () => {
       try {
         const data = JSON.parse(e.target?.result as string);
 
-        const loadedNodes = data.nodes.map((n: any) => ({
+        const loadedNodes = data.nodes.map((n) => ({
           ...n,
           type: "contractCall",
           data: {
@@ -238,7 +240,13 @@ export const Playground: React.FC = () => {
         }));
 
         setNodes(loadedNodes);
-        setEdges(data.edges || []);
+        const styledEdges = (data.edges || []).map((edge: Edge) => ({
+          ...edge,
+          type: "smoothstep",
+          animated: true,
+          style: { strokeWidth: 3, stroke: "#3b82f6" },
+        }));
+        setEdges(styledEdges);
       } catch (error) {
         console.error("Failed to load file:", error);
         alert("Failed to load file. Please check the file format.");
@@ -281,19 +289,10 @@ export const Playground: React.FC = () => {
               />
             </label>
 
-            {!wallet ? (
-              <button
-                onClick={handleConnectWallet}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
-              >
-                <Wallet className="w-4 h-4" />
-                Connect Wallet
-              </button>
-            ) : (
+            {isConnected ? <Account /> : <SignIn />}
+            {/*) : (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
-                </span>
+                <span className="text-sm text-gray-600">{account.address}</span>
                 <button
                   onClick={executeTransaction}
                   disabled={isExecuting}
@@ -303,7 +302,7 @@ export const Playground: React.FC = () => {
                   {isExecuting ? "Executing..." : "Execute"}
                 </button>
               </div>
-            )}
+            )}*/}
           </div>
         </div>
       </div>

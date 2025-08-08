@@ -16,11 +16,16 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@tanstack/react-query": "^5.84.1",
     "ethers": "^6.15.0",
     "lucide-react": "^0.537.0",
+    "porto": "^0.0.63",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "reactflow": "^11.11.4"
+    "reactflow": "^11.11.4",
+    "viem": "2.x",
+    "vite-plugin-mkcert": "^1.17.8",
+    "wagmi": "^2.16.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

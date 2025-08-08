@@ -14,19 +14,20 @@ interface NodeProps {
 export const ContractCallNode: React.FC<NodeProps> = ({ data, selected }) => {
   return (
     <div
-      className={`bg-white rounded-lg shadow-lg p-4 min-w-[250px] border-2 ${
+      className={`rounded-lg shadow-lg p-4 min-w-[250px] border-2 ${
         selected ? "border-blue-500" : "border-gray-200"
       }`}
+      style={{ backgroundColor: "white" }}
     >
       <Handle
         type="target"
         position={Position.Left}
-        className="w-3 h-3 bg-blue-500 border-2 border-white"
+        className="w-3 h-3 border-2 border-white bg-blue-500"
       />
 
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-gray-800 truncate flex-1">
-          {data.functionName || "New Contract Call"}
+          {data.functionName || "Call"}
         </h3>
         <div className="flex gap-1">
           <button

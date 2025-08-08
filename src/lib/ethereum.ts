@@ -31,10 +31,7 @@ export const encodeFunction = (
   return iface.encodeFunctionData(functionName, args);
 };
 
-export const buildTransaction = async (
-  nodes: ContractNode[],
-  provider: ethers.Provider
-) => {
+export const buildTransaction = async (nodes: ContractNode[]) => {
   const transactions = nodes.map((node) => ({
     to: node.data.contractAddress,
     data: encodeFunction(node.data.abi, node.data.functionName, node.data.args),
