@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import type { ContractNode } from '../types';
-import { parseABI, getFunctionSignature } from '../lib/ethereum';
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import type { ContractNode } from "../types";
+import { parseABI, getFunctionSignature } from "../lib/ethereum";
 
 interface NodeEditorProps {
   node: ContractNode | null;
@@ -9,21 +9,27 @@ interface NodeEditorProps {
   onClose: () => void;
 }
 
-export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
-  const [contractAddress, setContractAddress] = useState('');
-  const [abiInput, setAbiInput] = useState('');
+export const NodeEditor: React.FC<NodeEditorProps> = ({
+  node,
+  onSave,
+  onClose,
+}) => {
+  const [contractAddress, setContractAddress] = useState("");
+  const [abiInput, setAbiInput] = useState("");
   const [parsedAbi, setParsedAbi] = useState<any[]>([]);
-  const [selectedFunction, setSelectedFunction] = useState('');
-  const [functionArgs, setFunctionArgs] = useState<{ [key: string]: string }>({});
-  const [value, setValue] = useState('');
+  const [selectedFunction, setSelectedFunction] = useState("");
+  const [functionArgs, setFunctionArgs] = useState<{ [key: string]: string }>(
+    {}
+  );
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (node) {
-      setContractAddress(node.data.contractAddress || '');
+      setContractAddress(node.data.contractAddress || "");
       setParsedAbi(node.data.abi || []);
-      setSelectedFunction(node.data.functionName || '');
-      setValue(node.data.value || '');
-      
+      setSelectedFunction(node.data.functionName || "");
+      setValue(node.data.value || "");
+
       if (node.data.args) {
         const argsObj: { [key: string]: string } = {};
         node.data.args.forEach((arg, index) => {
@@ -42,35 +48,36 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
   };
 
   const getFunctions = () => {
-    return parsedAbi.filter(item => item.type === 'function');
+    return parsedAbi.filter((item) => item.type === "function");
   };
 
   const getSelectedFunctionInputs = () => {
-    const func = parsedAbi.find(item => 
-      item.type === 'function' && item.name === selectedFunction
+    const func = parsedAbi.find(
+      (item) => item.type === "function" && item.name === selectedFunction
     );
     return func?.inputs || [];
   };
 
   const handleSave = () => {
     if (!node) return;
-    
+
     const inputs = getSelectedFunctionInputs();
-    const args = inputs.map((_, index) => functionArgs[`arg_${index}`] || '');
-    
+    const args = inputs.map((_, index) => functionArgs[`arg_${index}`] || "");
+
     const updatedNode: ContractNode = {
       ...node,
       data: {
         ...node.data,
         contractAddress,
         functionName: selectedFunction,
-        functionSignature: getFunctionSignature(parsedAbi, selectedFunction) || '',
+        functionSignature:
+          getFunctionSignature(parsedAbi, selectedFunction) || "",
         abi: parsedAbi,
         args,
-        value
-      }
+        value,
+      },
     };
-    
+
     onSave(updatedNode);
   };
 
@@ -88,7 +95,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -102,7 +109,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
               placeholder="0x..."
             />
           </div>
-          
+
           {parsedAbi.length === 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -122,7 +129,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
               </button>
             </div>
           )}
-          
+
           {parsedAbi.length > 0 && (
             <>
               <div>
@@ -145,34 +152,38 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
                   ))}
                 </select>
               </div>
-              
+
               {selectedFunction && getSelectedFunctionInputs().length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Function Arguments
                   </label>
                   <div className="space-y-2">
-                    {getSelectedFunctionInputs().map((input: any, index: number) => (
-                      <div key={index}>
-                        <label className="block text-xs text-gray-600 mb-1">
-                          {input.name} ({input.type})
-                        </label>
-                        <input
-                          type="text"
-                          value={functionArgs[`arg_${index}`] || ''}
-                          onChange={(e) => setFunctionArgs({
-                            ...functionArgs,
-                            [`arg_${index}`]: e.target.value
-                          })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder={`Enter ${input.type}`}
-                        />
-                      </div>
-                    ))}
+                    {getSelectedFunctionInputs().map(
+                      (input: any, index: number) => (
+                        <div key={index}>
+                          <label className="block text-xs text-gray-600 mb-1">
+                            {input.name} ({input.type})
+                          </label>
+                          <input
+                            type="text"
+                            value={functionArgs[`arg_${index}`] || ""}
+                            onChange={(e) =>
+                              setFunctionArgs({
+                                ...functionArgs,
+                                [`arg_${index}`]: e.target.value,
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder={`Enter ${input.type}`}
+                          />
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               )}
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ETH Value (optional)
@@ -188,7 +199,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose })
             </>
           )}
         </div>
-        
+
         <div className="flex justify-end gap-2 p-4 border-t">
           <button
             onClick={onClose}
